@@ -1,0 +1,37 @@
+[
+  {
+    "name": "N",
+    "min": 2,
+    "max": 100,
+    "initial": 10,
+    "step": 1
+  },
+  {
+    "name": "M1",
+    "min": 3,
+    "max": 300,
+    "initial": 20,
+    "step": 1
+  },
+  {
+    "name": "R",
+    "min": "0",
+    "max": "255",
+    "initial": "255",
+    "step": 1
+  },
+  {
+    "name": "G",
+    "min": "0",
+    "max": "255",
+    "initial": "255",
+    "step": 1
+  },
+  {
+    "name": "B",
+    "min": "0",
+    "max": "255",
+    "initial": "255",
+    "step": 1
+  }
+]
