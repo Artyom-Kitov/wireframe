@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import org.json.JSONArray
 import java.io.BufferedReader
@@ -20,13 +20,15 @@ object ParametersReader {
         val result: MutableList<Parameter> = mutableListOf()
         for (i in 0..<parametersList.length()) {
             val parameter = parametersList.getJSONObject(i)
-            result.add(Parameter(
-                name = parameter.getString("name"),
-                min = parameter.getNumber("min"),
-                max = parameter.getNumber("max"),
-                initial = parameter.getNumber("initial"),
-                step = parameter.getNumber("step")
-            ))
+            result.add(
+                Parameter(
+                    name = parameter.getString("name"),
+                    min = parameter.getNumber("min"),
+                    max = parameter.getNumber("max"),
+                    initial = parameter.getNumber("initial"),
+                    step = parameter.getNumber("step")
+                )
+            )
         }
         return result
     }

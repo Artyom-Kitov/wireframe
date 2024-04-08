@@ -1,12 +1,14 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import javax.swing.JButton
+import javax.swing.JCheckBox
 import javax.swing.JPanel
 
 class ButtonsPanel(
     onDotAdd: (Float, Float) -> Unit,
     onDotDelete: () -> Unit,
     onZoom: (Float) -> Unit,
+    onDotsShown: (Boolean) -> Unit,
     onApply: () -> Unit,
 ) : JPanel() {
     init {
@@ -21,9 +23,16 @@ class ButtonsPanel(
         onZoomInButton.addActionListener { onZoom(1.2f) }
         onZoomOutButton.addActionListener { onZoom(0.8333333f) }
 
+        val onDotsShownBox = JCheckBox("Show points")
+        onDotsShownBox.isSelected = true
+        onDotsShownBox.addChangeListener {
+            onDotsShown(onDotsShownBox.isSelected)
+        }
+
         add(addButton)
         add(deleteButton)
         add(onZoomInButton)
         add(onZoomOutButton)
+        add(onDotsShownBox)
     }
 }

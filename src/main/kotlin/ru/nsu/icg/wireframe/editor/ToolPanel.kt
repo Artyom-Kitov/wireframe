@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import org.springframework.stereotype.Component
 import java.awt.Color

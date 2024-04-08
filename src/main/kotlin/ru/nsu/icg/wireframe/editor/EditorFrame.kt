@@ -1,8 +1,11 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import org.springframework.stereotype.Component
 import java.awt.Dimension
-import javax.swing.JButton
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.JFrame
 import javax.swing.SpringLayout
 import javax.swing.WindowConstants
@@ -19,6 +22,17 @@ class EditorFrame(
 
         val selectedDotPanel = SelectedDotPanel()
 
+        this.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                editorPanel.size = Dimension(size.width, size.height * 8 / 10)
+                editorPanel.preferredSize = Dimension(size.width, size.height * 8 / 10)
+                toolPanel.size = Dimension(size.width / 2, size.height / 10)
+                toolPanel.preferredSize = Dimension(size.width / 2, size.height / 10)
+                revalidate()
+                repaint()
+            }
+        })
+
         editorPanel.preferredSize = Dimension(preferredSize.width, preferredSize.height * 8 / 10)
         toolPanel.preferredSize = Dimension(preferredSize.width / 2, preferredSize.height / 10)
 
@@ -31,10 +45,16 @@ class EditorFrame(
 
         toolPanel.onChange = editorPanel::repaint
 
+        val onDelete = {
+            editorPanel.onDotDelete()
+            selectedDotPanel.unselect()
+        }
+
         val buttonPanel = ButtonsPanel(
             onDotAdd = editorPanel::addDot,
-            onDotDelete = { editorPanel.onDotDelete(); selectedDotPanel.unselect() },
+            onDotDelete = onDelete,
             onApply = {  },
+            onDotsShown = editorPanel::onDotsShown,
             onZoom = editorPanel::onZoom,
         )
         buttonPanel.preferredSize = toolPanel.preferredSize

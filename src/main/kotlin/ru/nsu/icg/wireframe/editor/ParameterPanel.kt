@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import java.awt.*
 import javax.swing.*

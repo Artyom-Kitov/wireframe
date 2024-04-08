@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.view.editor
+package ru.nsu.icg.wireframe.editor
 
 import java.awt.Color
 import java.awt.Dimension
@@ -71,8 +71,10 @@ class ControlDot (
         }
         g.color = if (isSelected) DOT_SELECTED_COLOR else DOT_UNSELECTED_COLOR
         g.drawOval(0, 0, 2 * DOT_RADIUS, 2 * DOT_RADIUS)
-        g.fillOval(DOT_RADIUS - DOT_THICKNESS / 2, DOT_RADIUS - DOT_THICKNESS / 2,
-            DOT_THICKNESS, DOT_THICKNESS)
+        g.fillOval(
+            DOT_RADIUS - DOT_THICKNESS / 2, DOT_RADIUS - DOT_THICKNESS / 2,
+            DOT_THICKNESS, DOT_THICKNESS
+        )
         (g as Graphics2D).drawString(index.toString(), DOT_RADIUS, DOT_RADIUS - 5)
     }
 
