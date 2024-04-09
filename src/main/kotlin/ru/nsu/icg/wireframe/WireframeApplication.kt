@@ -1,21 +1,16 @@
 package ru.nsu.icg.wireframe
 
 import com.formdev.flatlaf.FlatDarkLaf
-import com.formdev.flatlaf.themes.FlatMacDarkLaf
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
+import ru.nsu.icg.wireframe.scene.SceneFrame
+import ru.nsu.icg.wireframe.utils.linear.Matrix
+import ru.nsu.icg.wireframe.utils.linear.Vector
 import javax.swing.UIManager
 
-@SpringBootApplication
-class WireframeApplication
-
-fun main(args: Array<String>) {
+fun main() {
     try {
         UIManager.setLookAndFeel(FlatDarkLaf())
     } catch (e: ClassNotFoundException) {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
     }
-    val builder = SpringApplicationBuilder(WireframeApplication::class.java)
-    builder.headless(false)
-    builder.run(*args)
+    SceneFrame.isVisible = true
 }

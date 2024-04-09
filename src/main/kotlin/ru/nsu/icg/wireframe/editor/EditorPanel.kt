@@ -1,7 +1,6 @@
 package ru.nsu.icg.wireframe.editor
 
-import org.springframework.stereotype.Component
-import ru.nsu.icg.wireframe.utils.Dot2D
+import ru.nsu.icg.wireframe.utils.linear.Vector
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -10,8 +9,9 @@ import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.math.abs
 
-@Component
-class EditorPanel : JPanel() {
+object EditorPanel : JPanel() {
+    private fun readResolve(): Any = EditorPanel
+
     var splineColorSupplier: () -> Color = { Color.WHITE }
     var nSupplier: () -> Int = { 10 }
 
@@ -19,15 +19,17 @@ class EditorPanel : JPanel() {
     var onUnselect: () -> Unit = {  }
 
     private val controlDots: MutableList<ControlDot> = mutableListOf()
-    private val splineDots = mutableListOf<Dot2D>()
+    private val splineDots = mutableListOf<Vector>()
 
-    private val zoomFactor = 1.1f
+    private const val zoomFactor = 1.1f
+    private val LINE_COLOR = Color.WHITE
 
     private var scaleFactor = 150
     private var biasU: Float = 0f
     private var biasV: Float = 0f
     private var selectedDot: ControlDot? = null
     private var dotCounter = 1
+    private var dotsShown = true
 
     private var isPressed = false
     private var origin = Point(0, 0)
@@ -52,7 +54,7 @@ class EditorPanel : JPanel() {
             }
 
             override fun mousePressed(e: MouseEvent?) {
-                if (e == null) return
+                if (e == null || !SwingUtilities.isLeftMouseButton(e)) return
                 isPressed = true
                 origin = Point(e.x, e.y)
                 cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
@@ -92,6 +94,9 @@ class EditorPanel : JPanel() {
     }
 
     fun addDot(u: Float, v: Float) {
+        if (!dotsShown) {
+            return
+        }
         val dot = ControlDot(dotCounter++, u, v)
         controlDots.add(dot)
         add(dot)
@@ -105,6 +110,16 @@ class EditorPanel : JPanel() {
         repaint()
     }
 
+    fun onClear() {
+        controlDots.forEach(::remove)
+        controlDots.clear()
+        splineDots.clear()
+        dotCounter = 1
+        selectedDot = null
+        onUnselect()
+        repaint()
+    }
+
     fun setDotCoordinates(dot: ControlDot, u: Float, v: Float) {
         dot.setLocation(uToX(u), vToY(v))
         dot.u = u
@@ -113,6 +128,7 @@ class EditorPanel : JPanel() {
     }
 
     fun onDotsShown(b: Boolean) {
+        dotsShown = b
         controlDots.forEach{ it.isVisible = b }
         repaint()
     }
@@ -214,14 +230,14 @@ class EditorPanel : JPanel() {
                 val t = j * dt
                 val u = coefsU[0] * t * t * t + coefsU[1] * t * t + coefsU[2] * t + coefsU[3]
                 val v = coefsV[0] * t * t * t + coefsV[1] * t * t + coefsV[2] * t + coefsV[3]
-                splineDots.add(Dot2D(u, v))
+                splineDots.add(Vector.of(u, v))
             }
         }
         for (i in 0..<splineDots.lastIndex) {
-            val prevU = splineDots[i].u
-            val prevV = splineDots[i].v
-            val u = splineDots[i + 1].u
-            val v = splineDots[i + 1].v
+            val prevU = splineDots[i][0]
+            val prevV = splineDots[i][1]
+            val u = splineDots[i + 1][0]
+            val v = splineDots[i + 1][1]
             g.drawLine(uToX(prevU), vToY(prevV), uToX(u), vToY(v))
         }
     }
@@ -254,8 +270,4 @@ class EditorPanel : JPanel() {
     private fun vToY(v: Float): Int = (height / 2 + (v - biasV) * scaleFactor).toInt()
     private fun xToU(x: Int): Float = (x.toFloat() - width / 2) / scaleFactor + biasU
     private fun yToV(y: Int): Float = (y.toFloat() - height / 2) / scaleFactor + biasV
-
-    companion object {
-        private val LINE_COLOR = Color.WHITE
-    }
 }

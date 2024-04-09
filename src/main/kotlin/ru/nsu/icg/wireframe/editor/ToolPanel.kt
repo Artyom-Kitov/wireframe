@@ -1,12 +1,12 @@
 package ru.nsu.icg.wireframe.editor
 
-import org.springframework.stereotype.Component
 import java.awt.Color
 import javax.swing.JPanel
 
-@Component
-class ToolPanel : JPanel() {
-    val parametersPanels: MutableList<ParameterPanel> = mutableListOf()
+object ToolPanel : JPanel() {
+    private fun readResolve(): Any = ToolPanel
+
+    private val parametersPanels: MutableList<ParameterPanel> = mutableListOf()
     var onChange: () -> Unit = {}
         set(value) = parametersPanels.forEach { it.onChange = value }
 
@@ -36,7 +36,7 @@ class ToolPanel : JPanel() {
     val nSupplier: () -> Int = {
         var value = 0
         for (panel in parametersPanels) {
-            if (panel.parameterName == "N") {
+            if (panel.parameterName == "Smoothness") {
                 value = panel.value
             }
         }

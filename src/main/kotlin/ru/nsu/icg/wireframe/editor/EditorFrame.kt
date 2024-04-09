@@ -1,83 +1,77 @@
 package ru.nsu.icg.wireframe.editor
 
-import org.springframework.stereotype.Component
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
 import javax.swing.JFrame
 import javax.swing.SpringLayout
 import javax.swing.WindowConstants
 
-@Component
-class EditorFrame(
-    editorPanel: EditorPanel,
-    toolPanel: ToolPanel
-) : JFrame("Wireframe spline editor") {
+object EditorFrame : JFrame("Wireframe spline editor") {
+    private fun readResolve(): Any = EditorFrame
+
+    private val DEFAULT_SIZE = Dimension(1280, 720)
+    private val MINIMUM_SIZE = Dimension(640, 480)
+
     init {
         preferredSize = DEFAULT_SIZE
         minimumSize = MINIMUM_SIZE
-        defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
 
         val selectedDotPanel = SelectedDotPanel()
 
         this.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
-                editorPanel.size = Dimension(size.width, size.height * 8 / 10)
-                editorPanel.preferredSize = Dimension(size.width, size.height * 8 / 10)
-                toolPanel.size = Dimension(size.width / 2, size.height / 10)
-                toolPanel.preferredSize = Dimension(size.width / 2, size.height / 10)
+                EditorPanel.size = Dimension(size.width, size.height * 8 / 10)
+                EditorPanel.preferredSize = Dimension(size.width, size.height * 8 / 10)
+                ToolPanel.size = Dimension(size.width * 3 / 4, size.height / 10)
+                ToolPanel.preferredSize = Dimension(size.width * 3 / 4, size.height / 10)
                 revalidate()
                 repaint()
             }
         })
 
-        editorPanel.preferredSize = Dimension(preferredSize.width, preferredSize.height * 8 / 10)
-        toolPanel.preferredSize = Dimension(preferredSize.width / 2, preferredSize.height / 10)
+        EditorPanel.preferredSize = Dimension(preferredSize.width, preferredSize.height * 8 / 10)
+        ToolPanel.preferredSize = Dimension(preferredSize.width * 3 / 4, preferredSize.height / 10)
 
-        editorPanel.splineColorSupplier = toolPanel.colorSupplier
-        editorPanel.nSupplier = toolPanel.nSupplier
-        editorPanel.onSelect = selectedDotPanel::select
-        editorPanel.onUnselect = selectedDotPanel::unselect
+        EditorPanel.splineColorSupplier = ToolPanel.colorSupplier
+        EditorPanel.nSupplier = ToolPanel.nSupplier
+        EditorPanel.onSelect = selectedDotPanel::select
+        EditorPanel.onUnselect = selectedDotPanel::unselect
 
-        selectedDotPanel.onMove = editorPanel::setDotCoordinates
+        selectedDotPanel.onMove = EditorPanel::setDotCoordinates
 
-        toolPanel.onChange = editorPanel::repaint
+        ToolPanel.onChange = EditorPanel::repaint
 
         val onDelete = {
-            editorPanel.onDotDelete()
+            EditorPanel.onDotDelete()
             selectedDotPanel.unselect()
         }
 
         val buttonPanel = ButtonsPanel(
-            onDotAdd = editorPanel::addDot,
+            onDotAdd = EditorPanel::addDot,
             onDotDelete = onDelete,
             onApply = {  },
-            onDotsShown = editorPanel::onDotsShown,
-            onZoom = editorPanel::onZoom,
+            onDotsShown = EditorPanel::onDotsShown,
+            onClear = EditorPanel::onClear,
+            onZoom = EditorPanel::onZoom,
         )
-        buttonPanel.preferredSize = toolPanel.preferredSize
+        buttonPanel.preferredSize = ToolPanel.preferredSize
 
         val springLayout = SpringLayout()
-        springLayout.putConstraint(SpringLayout.NORTH, contentPane, 0, SpringLayout.NORTH, editorPanel)
-        springLayout.putConstraint(SpringLayout.NORTH, toolPanel, 0, SpringLayout.SOUTH, editorPanel)
-        springLayout.putConstraint(SpringLayout.WEST, selectedDotPanel, 0, SpringLayout.EAST, toolPanel)
-        springLayout.putConstraint(SpringLayout.NORTH, selectedDotPanel, 0, SpringLayout.SOUTH, editorPanel)
-        springLayout.putConstraint(SpringLayout.NORTH, buttonPanel, 0, SpringLayout.SOUTH, toolPanel)
+        springLayout.putConstraint(SpringLayout.NORTH, contentPane, 0, SpringLayout.NORTH, EditorPanel)
+        springLayout.putConstraint(SpringLayout.NORTH, ToolPanel, 0, SpringLayout.SOUTH, EditorPanel)
+        springLayout.putConstraint(SpringLayout.WEST, selectedDotPanel, 0, SpringLayout.EAST, ToolPanel)
+        springLayout.putConstraint(SpringLayout.NORTH, selectedDotPanel, 0, SpringLayout.SOUTH, EditorPanel)
+        springLayout.putConstraint(SpringLayout.NORTH, buttonPanel, 0, SpringLayout.SOUTH, ToolPanel)
         layout = springLayout
 
-        this.add(editorPanel)
-        this.add(toolPanel)
+        this.add(EditorPanel)
+        this.add(ToolPanel)
         this.add(selectedDotPanel)
         this.add(buttonPanel)
 
         this.pack()
-        isVisible = true
-    }
-
-    companion object {
-        private val DEFAULT_SIZE = Dimension(1280, 720)
-        private val MINIMUM_SIZE = Dimension(640, 480)
+        isVisible = false
     }
 }

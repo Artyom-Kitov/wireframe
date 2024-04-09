@@ -1,9 +1,23 @@
 [
   {
-    "name": "N",
+    "name": "Smoothness",
     "min": 1,
     "max": 100,
     "initial": 10,
+    "step": 1
+  },
+  {
+    "name": "Splines",
+    "min": 2,
+    "max": 20,
+    "initial": 5,
+    "step": 1
+  },
+  {
+    "name": "Circle detailing",
+    "min": 1,
+    "max": 20,
+    "initial": 3,
     "step": 1
   },
   {

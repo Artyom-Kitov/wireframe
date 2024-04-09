@@ -19,14 +19,17 @@ class ParameterPanel(parameter: Parameter) : JPanel() {
             onChange()
         }
 
-        this.add(JLabel(parameter.name))
-        this.add(spinner)
+        val labelPanel = JPanel()
+        val label = JLabel(parameter.name)
+        labelPanel.preferredSize = Dimension(SIZE.width, (label.preferredSize.height * 1.5).toInt())
+        labelPanel.add(label)
+        this.add(labelPanel, BorderLayout.NORTH)
+        this.add(spinner, BorderLayout.SOUTH)
 
         preferredSize = SIZE
-        layout = FlowLayout()
     }
 
     companion object {
-        private val SIZE = Dimension(100, 30)
+        private val SIZE = Dimension(100, 60)
     }
 }
