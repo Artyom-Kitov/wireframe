@@ -1,6 +1,6 @@
 [
   {
-    "name": "Smoothness",
+    "name": "Line smoothness",
     "min": 1,
     "max": 100,
     "initial": 10,
@@ -14,17 +14,10 @@
     "step": 1
   },
   {
-    "name": "Circle detailing",
+    "name": "Circle smoothness",
     "min": 1,
     "max": 20,
     "initial": 3,
-    "step": 1
-  },
-  {
-    "name": "M1",
-    "min": 3,
-    "max": 300,
-    "initial": 20,
     "step": 1
   },
   {

@@ -61,9 +61,25 @@ class Vector(
         }
     }
 
+    operator fun times(other: Vector) : Float {
+        require(n == other.n) { "invalid dimensions: $n and ${other.n}" }
+        var s = 0f
+        for (i in vector.indices) {
+            s += vector[i] * other.vector[i]
+        }
+        return s
+    }
+
     operator fun div(scalar: Float) = this * (1f / scalar)
 
     operator fun divAssign(scalar: Float) = timesAssign(1f / scalar)
+
+    operator fun timesAssign(matrix: Matrix) {
+        val result = matrix * this
+        for (i in vector.indices) {
+            vector[i] = result.vector[i]
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

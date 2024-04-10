@@ -1,5 +1,6 @@
 package ru.nsu.icg.wireframe.editor
 
+import ru.nsu.icg.wireframe.utils.linear.Matrix
 import ru.nsu.icg.wireframe.utils.linear.Vector
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -19,10 +20,17 @@ object EditorPanel : JPanel() {
     var onUnselect: () -> Unit = {  }
 
     private val controlDots: MutableList<ControlDot> = mutableListOf()
-    private val splineDots = mutableListOf<Vector>()
+    val splineDots = mutableListOf<Vector>()
+    val segmentsEnds = mutableListOf<Vector>()
 
-    private const val zoomFactor = 1.1f
+    private const val ZOOM_FACTOR = 1.1f
     private val LINE_COLOR = Color.WHITE
+    private val SPLINE_MATRIX = Matrix.of(
+        floatArrayOf(-1f, 3f, -3f, 1f),
+        floatArrayOf(3f, -6f, 3f, 0f),
+        floatArrayOf(-3f, 0f, 3f, 0f),
+        floatArrayOf(1f, 4f, 1f, 0f)
+    ) * (1f / 6)
 
     private var scaleFactor = 150
     private var biasU: Float = 0f
@@ -85,9 +93,9 @@ object EditorPanel : JPanel() {
                     return
                 }
                 if (e.wheelRotation > 0) {
-                    onZoom(1 / zoomFactor)
+                    onZoom(1 / ZOOM_FACTOR)
                 } else {
-                    onZoom(zoomFactor)
+                    onZoom(ZOOM_FACTOR)
                 }
             }
         })
@@ -114,6 +122,7 @@ object EditorPanel : JPanel() {
         controlDots.forEach(::remove)
         controlDots.clear()
         splineDots.clear()
+        segmentsEnds.clear()
         dotCounter = 1
         selectedDot = null
         onUnselect()
@@ -143,7 +152,7 @@ object EditorPanel : JPanel() {
         repaint()
     }
 
-    fun onZoom(factor: Float = zoomFactor) {
+    fun onZoom(factor: Float = ZOOM_FACTOR) {
         if (scaleFactor * factor < 1f) {
             return
         }
@@ -217,20 +226,20 @@ object EditorPanel : JPanel() {
         val n = nSupplier()
 
         splineDots.clear()
+        segmentsEnds.clear()
         val last = dots.lastIndex - 2
         for (i in 1..last) {
-            val uArr = arrayOf(dots[i - 1].u, dots[i].u, dots[i + 1].u,
-                dots[i + 2].u)
-            val vArr = arrayOf(dots[i - 1].v, dots[i].v, dots[i + 1].v,
-                dots[i + 2].v)
-            val coefsU = coefficients(uArr)
-            val coefsV = coefficients(vArr)
+            val pU = SPLINE_MATRIX * Vector.of(dots[i - 1].u, dots[i].u, dots[i + 1].u, dots[i + 2].u)
+            val pV = SPLINE_MATRIX * Vector.of(dots[i - 1].v, dots[i].v, dots[i + 1].v, dots[i + 2].v)
             val dt = 1f / n
             for (j in 0..< if (i == last) n + 1 else n) {
                 val t = j * dt
-                val u = coefsU[0] * t * t * t + coefsU[1] * t * t + coefsU[2] * t + coefsU[3]
-                val v = coefsV[0] * t * t * t + coefsV[1] * t * t + coefsV[2] * t + coefsV[3]
-                splineDots.add(Vector.of(u, v))
+                val vectorT = Vector.of(t * t * t, t * t, t, 1f)
+                val dot = Vector.of(pU * vectorT, pV * vectorT)
+                splineDots.add(dot)
+                if (j == 0 || j == n) {
+                    segmentsEnds.add(dot)
+                }
             }
         }
         for (i in 0..<splineDots.lastIndex) {
@@ -240,14 +249,6 @@ object EditorPanel : JPanel() {
             val v = splineDots[i + 1][1]
             g.drawLine(uToX(prevU), vToY(prevV), uToX(u), vToY(v))
         }
-    }
-
-    private fun coefficients(p: Array<Float>): Array<Float> {
-        val a = (-p[0] + 3 * p[1] - 3 * p[2] + p[3]) / 6f
-        val b = (3 * p[0] - 6 * p[1] + 3 * p[2]) / 6f
-        val c = (-3 * p[0] + 3 * p[2]) / 6f
-        val d = (p[0] + 4 * p[1] + p[2]) / 6f
-        return arrayOf(a, b, c, d)
     }
 
     private fun onDotDragged(dot: ControlDot) {

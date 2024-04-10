@@ -3,7 +3,10 @@ package ru.nsu.icg.wireframe.scene
 import ru.nsu.icg.wireframe.editor.EditorFrame
 import ru.nsu.icg.wireframe.utils.AboutFrame
 import java.awt.Dimension
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.*
+import kotlin.math.PI
 
 object SceneFrame : JFrame("Wireframe") {
     private fun readResolve(): Any = SceneFrame
@@ -20,6 +23,23 @@ object SceneFrame : JFrame("Wireframe") {
 
         ScenePanel.preferredSize = Dimension(preferredSize)
         this.add(ScenePanel)
+        isFocusable = true
+
+        this.addKeyListener(object : KeyAdapter() {
+            override fun keyPressed(e: KeyEvent?) {
+                val angle = PI.toFloat() / 24
+                when (e?.keyCode) {
+                    KeyEvent.VK_Q -> ScenePanel.rotate(angle, 0f, 0f)
+                    KeyEvent.VK_E -> ScenePanel.rotate(-angle, 0f, -0f)
+
+                    KeyEvent.VK_A -> ScenePanel.rotate(0f, angle, 0f)
+                    KeyEvent.VK_D -> ScenePanel.rotate(0f, -angle, 0f)
+
+                    KeyEvent.VK_W -> ScenePanel.rotate(0f, 0f, angle)
+                    KeyEvent.VK_S -> ScenePanel.rotate(0f, 0f, -angle)
+                }
+            }
+        })
 
         this.pack()
         isVisible = true

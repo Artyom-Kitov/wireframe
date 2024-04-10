@@ -19,27 +19,22 @@ object ToolPanel : JPanel() {
         }
     }
 
-    val colorSupplier: () -> Color = {
-        var r = 0
-        var g = 0
-        var b = 0
+    private fun findProperty(name: String): Int {
         for (panel in parametersPanels) {
-            when (panel.parameterName) {
-                "R" -> r = panel.value
-                "G" -> g = panel.value
-                "B" -> b = panel.value
-                else -> {}
+            if (panel.parameterName == name) {
+                return panel.value
             }
         }
+        throw IllegalStateException("property with name $name not found")
+    }
+
+    val colorSupplier: () -> Color = {
+        val r = findProperty("R")
+        val g = findProperty("G")
+        val b = findProperty("B")
         Color(r, g, b)
     }
-    val nSupplier: () -> Int = {
-        var value = 0
-        for (panel in parametersPanels) {
-            if (panel.parameterName == "Smoothness") {
-                value = panel.value
-            }
-        }
-        value
-    }
+    val nSupplier: () -> Int = { findProperty("Line smoothness") }
+    val mSupplier: () -> Int = { findProperty("Splines") }
+    val m1Supplier: () -> Int = { findProperty("Circle smoothness") }
 }

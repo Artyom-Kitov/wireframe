@@ -13,6 +13,9 @@ class ButtonsPanel(
     onApply: () -> Unit,
 ) : JPanel() {
     init {
+        val applyButton = JButton("Apply")
+        applyButton.addActionListener { onApply() }
+
         val addButton = JButton("Add point")
         addButton.addActionListener { onDotAdd(0f, 0f) }
 
@@ -40,6 +43,7 @@ class ButtonsPanel(
             onDotsShown(onDotsShownBox.isSelected)
         }
 
+        add(applyButton)
         add(addButton)
         add(deleteButton)
         add(clearButton)

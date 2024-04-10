@@ -1,5 +1,8 @@
 package ru.nsu.icg.wireframe.editor
 
+import ru.nsu.icg.wireframe.scene.ScenePanel
+import ru.nsu.icg.wireframe.utils.BSplineRotator
+import ru.nsu.icg.wireframe.utils.linear.Vector
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -47,11 +50,21 @@ object EditorFrame : JFrame("Wireframe spline editor") {
             EditorPanel.onDotDelete()
             selectedDotPanel.unselect()
         }
+        val onApply = {
+            isVisible = false
+            ScenePanel.lines = BSplineRotator(
+                dots = EditorPanel.splineDots,
+                segmentsEnds = EditorPanel.segmentsEnds,
+                m = ToolPanel.mSupplier(),
+                m1 = ToolPanel.m1Supplier(),
+            ).buildLines()
+            ScenePanel.color = ToolPanel.colorSupplier()
+        }
 
         val buttonPanel = ButtonsPanel(
             onDotAdd = EditorPanel::addDot,
             onDotDelete = onDelete,
-            onApply = {  },
+            onApply = onApply,
             onDotsShown = EditorPanel::onDotsShown,
             onClear = EditorPanel::onClear,
             onZoom = EditorPanel::onZoom,
