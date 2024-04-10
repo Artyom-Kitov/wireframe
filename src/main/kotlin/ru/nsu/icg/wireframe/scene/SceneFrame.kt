@@ -5,17 +5,18 @@ import ru.nsu.icg.wireframe.utils.AboutFrame
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.*
 import kotlin.math.PI
 
 object SceneFrame : JFrame("Wireframe") {
     private fun readResolve(): Any = SceneFrame
 
-    private val DEFAULT_SIZE = Dimension(1280, 720)
     private val MINIMUM_SIZE = Dimension(640, 480)
 
     init {
-        preferredSize = DEFAULT_SIZE
+        extendedState = MAXIMIZED_BOTH
         minimumSize = MINIMUM_SIZE
         defaultCloseOperation = EXIT_ON_CLOSE
 
@@ -24,22 +25,6 @@ object SceneFrame : JFrame("Wireframe") {
         ScenePanel.preferredSize = Dimension(preferredSize)
         this.add(ScenePanel)
         isFocusable = true
-
-        this.addKeyListener(object : KeyAdapter() {
-            override fun keyPressed(e: KeyEvent?) {
-                val angle = PI.toFloat() / 24
-                when (e?.keyCode) {
-                    KeyEvent.VK_Q -> ScenePanel.rotate(angle, 0f, 0f)
-                    KeyEvent.VK_E -> ScenePanel.rotate(-angle, 0f, -0f)
-
-                    KeyEvent.VK_A -> ScenePanel.rotate(0f, angle, 0f)
-                    KeyEvent.VK_D -> ScenePanel.rotate(0f, -angle, 0f)
-
-                    KeyEvent.VK_W -> ScenePanel.rotate(0f, 0f, angle)
-                    KeyEvent.VK_S -> ScenePanel.rotate(0f, 0f, -angle)
-                }
-            }
-        })
 
         this.pack()
         isVisible = true
@@ -50,6 +35,7 @@ object SceneFrame : JFrame("Wireframe") {
 
         val file = JMenu("File")
         val edit = JMenuItem("Editor")
+        val reset = JMenuItem("Reset")
         val about = JMenuItem("About")
 
         val fileOpen = JMenuItem("Open")
@@ -57,11 +43,13 @@ object SceneFrame : JFrame("Wireframe") {
         file.add(fileOpen)
         file.add(fileSave)
 
+        reset.addActionListener { ScenePanel.reset() }
         edit.addActionListener { EditorFrame.isVisible = true }
         about.addActionListener { AboutFrame.isVisible = true }
 
         menuBar.add(file)
         menuBar.add(edit)
+        menuBar.add(reset)
         menuBar.add(about)
         this.jMenuBar = menuBar
     }

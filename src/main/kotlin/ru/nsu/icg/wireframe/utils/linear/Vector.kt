@@ -81,6 +81,11 @@ class Vector(
         }
     }
 
+    operator fun component1() = vector[0]
+    operator fun component2() = vector[1]
+    operator fun component3() = vector[2]
+    operator fun component4() = vector[3]
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

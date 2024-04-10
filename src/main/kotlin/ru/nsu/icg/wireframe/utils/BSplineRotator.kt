@@ -1,7 +1,6 @@
 package ru.nsu.icg.wireframe.utils
 
 import ru.nsu.icg.wireframe.utils.linear.Vector
-import java.awt.Color
 import kotlin.math.*
 
 class BSplineRotator(
@@ -10,28 +9,27 @@ class BSplineRotator(
     private val m: Int,
     private val m1: Int,
 ) {
-    private fun normalize() {
-        var maxU = dots[0][0]
-        var maxV = dots[0][0]
-        for (dot in dots) {
-            if (abs(dot[0]) > maxU) maxU = abs(dot[0])
-            if (abs(dot[1]) > maxV) maxV = abs(dot[0])
+    private fun normalize(lines: List<List<Vector>>) {
+        var maxCoordinate = abs(lines[0][0][0])
+        for (line in lines) {
+            for (dot in line) {
+                for (i in 0..<dot.n) {
+                    if (abs(dot[i]) > maxCoordinate) {
+                        maxCoordinate = abs(dot[i])
+                    }
+                }
+            }
         }
-        val maxCoordinate = max(maxU, maxV)
-        val newDots: MutableList<Vector> = mutableListOf()
-        val newEnds: MutableList<Vector> = mutableListOf()
-        for (dot in dots) {
-            newDots.add(dot / maxCoordinate)
+        for (line in lines) {
+            for (dot in line) {
+                dot /= maxCoordinate
+                dot[2] = -dot[2]
+                dot[3] = 1f
+            }
         }
-        for (end in segmentsEnds) {
-            newEnds.add(end / maxCoordinate)
-        }
-        dots = newDots
-        segmentsEnds = newEnds
     }
 
     fun buildLines(): List<List<Vector>> {
-        normalize()
         val lines: MutableList<MutableList<Vector>> = mutableListOf()
         for (spline in 0..<m) {
             val line: MutableList<Vector> = mutableListOf()
@@ -43,17 +41,13 @@ class BSplineRotator(
         }
         for (end in segmentsEnds) {
             val circle: MutableList<Vector> = mutableListOf()
-            for (i in 0..<m * m1) {
+            for (i in 0..m * m1) {
                 val angle: Float = i.toFloat() * 2f * PI.toFloat() / m / m1
                 circle.add(Vector.of(end[1] * cos(angle), end[1] * sin(angle), end[0], 1f))
             }
-            circle.add(circle[0])
             lines.add(circle)
         }
+        normalize(lines)
         return lines
-    }
-
-    companion object {
-        private const val BOX_RADIUS = 1f
     }
 }

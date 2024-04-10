@@ -24,6 +24,14 @@ class Matrix(
             }
             return Matrix(matrix, n, m)
         }
+
+        fun eye(n: Int): Matrix {
+            val matrix = FloatArray(n * n)
+            for (i in 0..<n) {
+                matrix[i * n + i] = 1f
+            }
+            return Matrix(matrix, n, n)
+        }
     }
 
     operator fun get(line: Int, column: Int) = matrix[m * line + column]
