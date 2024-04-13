@@ -1,12 +1,7 @@
 package ru.nsu.icg.wireframe.scene
 
-import ru.nsu.icg.wireframe.utils.linear.Matrix
 import ru.nsu.icg.wireframe.utils.linear.Vector
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Graphics
-import java.awt.Graphics2D
+import java.awt.*
 import javax.swing.JPanel
 
 object AxisLocatorPanel : JPanel() {
@@ -21,9 +16,9 @@ object AxisLocatorPanel : JPanel() {
     private val colors = listOf(Color.RED, Color.GREEN, Color.BLUE)
     private val names = listOf("x", "y", "z")
 
-    private const val scaleFactor = 30
+    private const val SCALE_FACTOR = 30
 
-    internal var rotationMatrix = Matrix.eye(4)
+    private val rotationMatrix by ScenePanel::rotationMatrix
 
     init {
         size = Dimension(100, 100)
@@ -41,8 +36,8 @@ object AxisLocatorPanel : JPanel() {
             val transformed = rotationMatrix * axis[i]
             val x1 = width / 2
             val y1 = height / 2
-            val x2 = (width / 2 + transformed[2] * scaleFactor).toInt()
-            val y2 = (height / 2 - transformed[1] * scaleFactor).toInt()
+            val x2 = (width / 2 + transformed[2] * SCALE_FACTOR).toInt()
+            val y2 = (height / 2 - transformed[1] * SCALE_FACTOR).toInt()
 
             g.drawString(names[i], x2 + 3, y2 - 3)
             g.drawLine(x1, y1, x2, y2)

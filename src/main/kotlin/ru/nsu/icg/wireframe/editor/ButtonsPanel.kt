@@ -8,8 +8,10 @@ class ButtonsPanel(
     onDotAdd: (Float, Float) -> Unit,
     onDotDelete: () -> Unit,
     onClear: () -> Unit,
-    onZoom: (Float) -> Unit,
+    onZoom: () -> Unit,
+    onNormalize: () -> Unit,
     onDotsShown: (Boolean) -> Unit,
+    onAutoscale: (Boolean) -> Unit,
     onApply: () -> Unit,
 ) : JPanel() {
     init {
@@ -25,30 +27,39 @@ class ButtonsPanel(
         val clearButton = JButton("Clear")
         clearButton.addActionListener { onClear() }
 
-        val onZoomInButton = JButton("Zoom in")
-        val onZoomOutButton = JButton("Zoom out")
-        onZoomInButton.addActionListener { onZoom(1.2f) }
-        onZoomOutButton.addActionListener { onZoom(0.8333333f) }
+        val zoomInButton = JButton("Zoom in")
+        val zoomOutButton = JButton("Zoom out")
+        zoomInButton.addActionListener { onZoom() }
+        zoomOutButton.addActionListener { onZoom() }
 
-        val onDotsShownBox = JCheckBox("Show points")
-        onDotsShownBox.isSelected = true
-        onDotsShownBox.addChangeListener {
-            if (!onDotsShownBox.isSelected) {
+        val normalizeButton = JButton("Normalize")
+        normalizeButton.addActionListener { onNormalize() }
+
+        val dotsShownBox = JCheckBox("Show points")
+        dotsShownBox.isSelected = true
+        dotsShownBox.addChangeListener {
+            if (!dotsShownBox.isSelected) {
                 addButton.isEnabled = false
                 deleteButton.isEnabled = false
             } else {
                 addButton.isEnabled = true
                 deleteButton.isEnabled = true
             }
-            onDotsShown(onDotsShownBox.isSelected)
+            onDotsShown(dotsShownBox.isSelected)
         }
+
+        val autoscaleBox = JCheckBox("Autoscale")
+        autoscaleBox.isSelected = false
+        autoscaleBox.addChangeListener { onAutoscale(autoscaleBox.isSelected) }
 
         add(applyButton)
         add(addButton)
         add(deleteButton)
         add(clearButton)
-        add(onZoomInButton)
-        add(onZoomOutButton)
-        add(onDotsShownBox)
+        add(zoomInButton)
+        add(zoomOutButton)
+        add(normalizeButton)
+        add(dotsShownBox)
+        add(autoscaleBox)
     }
 }

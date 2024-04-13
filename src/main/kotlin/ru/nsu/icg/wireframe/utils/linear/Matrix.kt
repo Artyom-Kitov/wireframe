@@ -5,7 +5,6 @@ class Matrix(
     private val n: Int,
     private val m: Int,
 ) {
-
     companion object {
         fun of(vararg lines: FloatArray) : Matrix {
             val n = lines.size

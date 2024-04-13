@@ -1,12 +1,18 @@
 package ru.nsu.icg.wireframe.utils.linear
 
 class Vector(
-    private val vector: FloatArray
+    private var vector: FloatArray
 ) {
     val n = vector.size
 
     companion object {
         fun of(vararg elements: Float) = Vector(elements)
+    }
+
+    fun copy() = of(*vector)
+
+    fun add(value: Float) {
+        vector = floatArrayOf(*vector, value)
     }
 
     operator fun get(i: Int) = vector[i]

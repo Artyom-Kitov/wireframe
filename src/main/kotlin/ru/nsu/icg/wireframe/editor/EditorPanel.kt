@@ -9,6 +9,8 @@ import java.awt.event.MouseWheelEvent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.sign
 
 object EditorPanel : JPanel() {
     private fun readResolve(): Any = EditorPanel
@@ -19,12 +21,20 @@ object EditorPanel : JPanel() {
     var onSelect: (ControlDot) -> Unit = {  }
     var onUnselect: () -> Unit = {  }
 
+    var autoScale = false
+        set(value) {
+            field = value
+            if (value) rescale()
+        }
+
     private val controlDots: MutableList<ControlDot> = mutableListOf()
     val splineDots = mutableListOf<Vector>()
     val segmentsEnds = mutableListOf<Vector>()
 
-    private const val ZOOM_FACTOR = 1.1f
+    private const val ZOOM_DELTA = 5f
     private val LINE_COLOR = Color.WHITE
+    private val GRID_COLOR = Color.DARK_GRAY
+    private const val MIN_SCALE_FACTOR = 0.1f
     private val SPLINE_MATRIX = Matrix.of(
         floatArrayOf(-1f, 3f, -3f, 1f),
         floatArrayOf(3f, -6f, 3f, 0f),
@@ -59,6 +69,7 @@ object EditorPanel : JPanel() {
                 } else {
                     addDot(xToU(e.x), yToV(e.y))
                 }
+                if (autoScale) rescale()
             }
 
             override fun mousePressed(e: MouseEvent?) {
@@ -72,6 +83,7 @@ object EditorPanel : JPanel() {
                 if (e == null) return
                 isPressed = false
                 cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+                if (autoScale) rescale()
             }
         })
         this.addMouseMotionListener(object : MouseAdapter() {
@@ -89,14 +101,8 @@ object EditorPanel : JPanel() {
         })
         this.addMouseWheelListener(object : MouseAdapter() {
             override fun mouseWheelMoved(e: MouseWheelEvent?) {
-                if (e == null) {
-                    return
-                }
-                if (e.wheelRotation > 0) {
-                    onZoom(1 / ZOOM_FACTOR)
-                } else {
-                    onZoom(ZOOM_FACTOR)
-                }
+                if (e == null) return
+                onZoom(-ZOOM_DELTA * sign(e.wheelRotation.toFloat()))
             }
         })
     }
@@ -115,7 +121,7 @@ object EditorPanel : JPanel() {
             onSelect(it)
         }
         dot.onSelect(dot)
-        repaint()
+        if (autoScale) rescale()
     }
 
     fun onClear() {
@@ -123,6 +129,11 @@ object EditorPanel : JPanel() {
         controlDots.clear()
         splineDots.clear()
         segmentsEnds.clear()
+
+        biasU = 0f
+        biasV = 0f
+        scaleFactor = 150
+
         dotCounter = 1
         selectedDot = null
         onUnselect()
@@ -133,6 +144,22 @@ object EditorPanel : JPanel() {
         dot.setLocation(uToX(u), vToY(v))
         dot.u = u
         dot.v = v
+        repaint()
+    }
+
+    fun normalize() {
+        if (controlDots.isEmpty()) return
+        var maxCoordinate = abs(controlDots[0].u)
+        for (dot in controlDots) {
+            if (abs(dot.u) > maxCoordinate) maxCoordinate = abs(dot.u)
+            if (abs(dot.v) > maxCoordinate) maxCoordinate = abs(dot.v)
+        }
+        if (maxCoordinate == 0f) return
+        for (dot in controlDots) {
+            dot.u /= maxCoordinate
+            dot.v /= maxCoordinate
+        }
+        rescale()
         repaint()
     }
 
@@ -152,55 +179,91 @@ object EditorPanel : JPanel() {
         repaint()
     }
 
-    fun onZoom(factor: Float = ZOOM_FACTOR) {
-        if (scaleFactor * factor < 1f) {
+    fun onZoom(delta: Float = ZOOM_DELTA) {
+        if (scaleFactor + delta <= MIN_SCALE_FACTOR) {
             return
         }
-        scaleFactor = (scaleFactor * factor).toInt()
-        rescale()
+        scaleFactor = (scaleFactor + delta).toInt()
+        if (autoScale) rescale()
         repaint()
     }
 
-    private fun rescale() {
+    private fun revalidateDots() {
         controlDots.forEach {
             it.setLocation(uToX(it.u), vToY(it.v))
         }
     }
 
+    private fun rescale() {
+        if (autoScale && controlDots.size > 1) {
+            var uMin = controlDots[0].u
+            var uMax = controlDots[0].u
+            var vMin = controlDots[0].v
+            var vMax = controlDots[0].v
+            for (dot in controlDots) {
+                if (dot.u < uMin) uMin = dot.u
+                if (dot.u > uMax) uMax = dot.u
+                if (dot.v < vMin) vMin = dot.v
+                if (dot.v > vMax) vMax = dot.v
+            }
+            if (xToU(0) > uMin || xToU(width) < uMax || yToV(0) > vMin || yToV(height) < vMax) {
+                val factor = 1.1f
+                fitTo(uMin * factor, uMax * factor, vMin * factor, vMax * factor)
+                return
+            }
+            val minBox = 100
+            if (uToX(uMax) - uToX(uMin) < minBox || vToY((vMax)) - vToY(vMin) < minBox) {
+                val factor = 1.1f
+                fitTo(uMin * factor, uMax * factor, vMin * factor, vMax * factor)
+            }
+        }
+    }
+
+    private fun fitTo(uMin: Float, uMax: Float, vMin: Float, vMax: Float) {
+        val newFactor = min((width / (uMax - uMin)).toInt(), (height / (vMax - vMin)).toInt())
+        if (abs(newFactor) < MIN_SCALE_FACTOR) return
+        scaleFactor = newFactor
+        biasU = (uMax + uMin) / 2
+        biasV = (vMax + vMin) / 2
+        repaint()
+    }
+
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)
-        if (g == null) {
-            return
-        }
-        rescale()
+        if (g == null) return
+        revalidateDots()
         paintGrid(g)
         paintBSpline(g)
     }
 
     private fun paintGrid(g: Graphics) {
-        g.color = LINE_COLOR
         val biasX = (biasU * scaleFactor).toInt()
         val biasY = (biasV * scaleFactor).toInt()
-        g.drawLine(0, height / 2 - biasY, width, height / 2 - biasY)
-        g.drawLine(width / 2 - biasX, 0, width / 2 - biasX, height)
 
         val serifSize = 4
         val sizeX = width / scaleFactor + abs(biasX)
         val sizeY = height / scaleFactor + abs(biasY)
         for (i in -sizeX + 1..<sizeX) {
-            g.drawLine(width / 2 + i * scaleFactor - biasX, height / 2 - serifSize - biasY,
-                width / 2 + i * scaleFactor - biasX, height / 2 + serifSize - biasY)
+            g.color = GRID_COLOR
+            g.drawLine(width / 2 + i * scaleFactor - biasX, 0,
+                width / 2 + i * scaleFactor - biasX, height)
+            g.color = LINE_COLOR
             (g as Graphics2D).drawString(i.toString(), width / 2 + i * scaleFactor + serifSize - biasX,
                 height / 2 - 2 * serifSize - biasY)
         }
         for (i in -sizeY + 1..<sizeY) {
-            g.drawLine(width / 2 - serifSize - biasX, height / 2 + i * scaleFactor - biasY,
-                width / 2 + serifSize - biasX, height / 2 + i * scaleFactor - biasY)
+            g.color = GRID_COLOR
+            g.drawLine(0, height / 2 + i * scaleFactor - biasY,
+                width, height / 2 + i * scaleFactor - biasY)
             if (i != 0) {
+                g.color = LINE_COLOR
                 (g as Graphics2D).drawString((-i).toString(), width / 2 + 2 * serifSize - biasX,
                     height / 2 + i * scaleFactor + 2 * serifSize - biasY)
             }
         }
+        g.color = LINE_COLOR
+        g.drawLine(0, height / 2 - biasY, width, height / 2 - biasY)
+        g.drawLine(width / 2 - biasX, 0, width / 2 - biasX, height)
         (g as Graphics2D).drawString("u", width - 20, height / 2 + 20 - biasY)
         g.drawString("v", width / 2 + 10 - biasX, 10)
 
@@ -257,6 +320,7 @@ object EditorPanel : JPanel() {
         dot.u = xToU(newX)
         dot.v = yToV(newY)
         onSelect(dot)
+        if (autoScale) rescale()
         repaint()
     }
 

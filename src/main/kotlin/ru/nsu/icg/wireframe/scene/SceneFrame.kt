@@ -2,6 +2,8 @@ package ru.nsu.icg.wireframe.scene
 
 import ru.nsu.icg.wireframe.editor.EditorFrame
 import ru.nsu.icg.wireframe.utils.AboutFrame
+import ru.nsu.icg.wireframe.utils.FileManager
+import ru.nsu.icg.wireframe.utils.loadImageFromResources
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -19,6 +21,8 @@ object SceneFrame : JFrame("Wireframe") {
         extendedState = MAXIMIZED_BOTH
         minimumSize = MINIMUM_SIZE
         defaultCloseOperation = EXIT_ON_CLOSE
+
+        iconImage = loadImageFromResources("/icons/logo.png").image
 
         setupMenu()
 
@@ -40,6 +44,11 @@ object SceneFrame : JFrame("Wireframe") {
 
         val fileOpen = JMenuItem("Open")
         val fileSave = JMenuItem("Save")
+        fileOpen.addActionListener {
+            val figure = FileManager.open()
+            if (figure != null) ScenePanel.figure = figure
+        }
+        fileSave.addActionListener { FileManager.save(ScenePanel.figure) }
         file.add(fileOpen)
         file.add(fileSave)
 

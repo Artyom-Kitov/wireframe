@@ -10,14 +10,14 @@
     "name": "Splines",
     "min": 2,
     "max": 50,
-    "initial": 5,
+    "initial": 8,
     "step": 1
   },
   {
     "name": "Circle smoothness",
     "min": 1,
     "max": 20,
-    "initial": 3,
+    "initial": 5,
     "step": 1
   },
   {

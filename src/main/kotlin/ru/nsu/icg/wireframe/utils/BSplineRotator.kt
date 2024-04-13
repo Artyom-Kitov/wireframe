@@ -1,6 +1,8 @@
 package ru.nsu.icg.wireframe.utils
 
 import ru.nsu.icg.wireframe.utils.linear.Vector
+import java.io.File
+import java.nio.file.Path
 import kotlin.math.*
 
 class BSplineRotator(
@@ -9,45 +11,25 @@ class BSplineRotator(
     private val m: Int,
     private val m1: Int,
 ) {
-    private fun normalize(lines: List<List<Vector>>) {
-        var maxCoordinate = abs(lines[0][0][0])
-        for (line in lines) {
-            for (dot in line) {
-                for (i in 0..<dot.n) {
-                    if (abs(dot[i]) > maxCoordinate) {
-                        maxCoordinate = abs(dot[i])
-                    }
-                }
-            }
-        }
-        for (line in lines) {
-            for (dot in line) {
-                dot /= maxCoordinate
-                dot[2] = -dot[2]
-                dot[3] = 1f
-            }
-        }
-    }
-
-    fun buildLines(): List<List<Vector>> {
-        val lines: MutableList<MutableList<Vector>> = mutableListOf()
+    fun buildLines(): Figure {
+        val figure = Figure()
         for (spline in 0..<m) {
-            val line: MutableList<Vector> = mutableListOf()
+            val line = Line()
             for (dot in dots) {
                 val angle: Float = spline.toFloat() * 2f * PI.toFloat() / m
                 line.add(Vector.of(dot[1] * cos(angle), dot[1] * sin(angle), dot[0], 1f))
             }
-            lines.add(line)
+            figure.add(line)
         }
         for (end in segmentsEnds) {
-            val circle: MutableList<Vector> = mutableListOf()
+            val circle = Line()
             for (i in 0..m * m1) {
                 val angle: Float = i.toFloat() * 2f * PI.toFloat() / m / m1
                 circle.add(Vector.of(end[1] * cos(angle), end[1] * sin(angle), end[0], 1f))
             }
-            lines.add(circle)
+            figure.add(circle)
         }
-        normalize(lines)
-        return lines
+        figure.normalize()
+        return figure
     }
 }

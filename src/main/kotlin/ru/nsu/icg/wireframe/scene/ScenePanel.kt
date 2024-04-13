@@ -1,11 +1,10 @@
 package ru.nsu.icg.wireframe.scene
 
+import ru.nsu.icg.wireframe.utils.Figure
 import ru.nsu.icg.wireframe.utils.linear.Matrix
 import ru.nsu.icg.wireframe.utils.linear.Vector
 import java.awt.*
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.awt.event.MouseWheelEvent
+import java.awt.event.*
 import javax.swing.JPanel
 import kotlin.math.*
 
@@ -13,16 +12,14 @@ object ScenePanel : JPanel() {
     private fun readResolve(): Any = ScenePanel
 
     private var scaleFactor = 500
-    var lines: List<List<Vector>> = listOf()
+    var figure = Figure.LOGO
         set(value) {
             field = value
-            AxisLocatorPanel.rotationMatrix = rotationMatrix
-
             val minSize = min(width / 2, height / 2)
             scaleFactor = (minSize / BOX_RADIUS).toInt()
             repaint()
         }
-    var color: Color = Color.WHITE
+    var color: Color = Color.MAGENTA
 
     private const val FOCUS_POSITION = -10f
     private const val ROTATION_SCALE_FACTOR = 0.01f
@@ -31,7 +28,7 @@ object ScenePanel : JPanel() {
 
     private var screenDistance = 10f
 
-    private var rotationMatrix = Matrix.eye(4)
+    internal var rotationMatrix = Matrix.eye(4)
 
     private var mousePoint = Point(0, 0)
     private var isMousePressed = false
@@ -40,7 +37,7 @@ object ScenePanel : JPanel() {
         background = Color.BLACK
         layout = FlowLayout(FlowLayout.LEFT)
         add(AxisLocatorPanel)
-        addMouseListener(object : MouseAdapter() {
+        this.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 if (e == null) return
                 mousePoint = e.point
@@ -51,16 +48,16 @@ object ScenePanel : JPanel() {
                 isMousePressed = false
             }
         })
-        addMouseMotionListener(object : MouseAdapter() {
+        this.addMouseMotionListener(object : MouseAdapter() {
             override fun mouseDragged(e: MouseEvent?) {
                 if (e == null || !isMousePressed) return
-                val dx = -(e.x - mousePoint.x).toFloat()
-                val dy = -(e.y - mousePoint.y).toFloat()
+                val dx = (e.x - mousePoint.x).toFloat()
+                val dy = (e.y - mousePoint.y).toFloat()
                 if (dx == 0f && dy == 0f) return
 
                 val norm = sqrt(dx * dx + dy * dy)
                 val angle = norm * ROTATION_SCALE_FACTOR
-                rotateAroundVector(Vector.of(dy, -dx, 0f, norm) / norm, angle)
+                rotateAroundVector(Vector.of(0f, dx, dy, norm) / norm, angle)
 
                 mousePoint = e.point
                 repaint()
@@ -69,8 +66,14 @@ object ScenePanel : JPanel() {
         this.addMouseWheelListener(object : MouseAdapter() {
             override fun mouseWheelMoved(e: MouseWheelEvent?) {
                 if (e == null) return
-                screenDistance += 0.1f * sign(e.wheelRotation.toFloat())
+                screenDistance -= 0.1f * sign(e.wheelRotation.toFloat())
                 screenDistance = max(screenDistance, 0f)
+                repaint()
+            }
+        })
+        this.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                scaleFactor = min(width / 4, height / 4)
                 repaint()
             }
         })
@@ -78,7 +81,6 @@ object ScenePanel : JPanel() {
 
     fun reset() {
         rotationMatrix = Matrix.eye(4)
-        AxisLocatorPanel.rotationMatrix = rotationMatrix
         repaint()
     }
 
@@ -100,7 +102,6 @@ object ScenePanel : JPanel() {
             floatArrayOf((1 - c) * x * z - s * y, (1 - c) * y * z + s * x, c + (1 - c) * z * z, 0f),
             floatArrayOf(0f, 0f, 0f, 1f),
         )
-        AxisLocatorPanel.rotationMatrix = rotationMatrix
     }
 
     private fun between(lower: Float, higher: Float, value: Float) = max(lower, min(value, higher))
@@ -110,7 +111,7 @@ object ScenePanel : JPanel() {
         if (g == null) return
 
         val transformMatrix = projectionMatrix * rotationMatrix
-        for (line in lines) {
+        for (line in figure) {
             var prev = transformMatrix * line[0]
             var x = prev[0]
             prev = prev / prev[3]
@@ -131,8 +132,8 @@ object ScenePanel : JPanel() {
 
                 var intensity = max(p1Intensity, p2Intensity)
                 intensity = between(0f, 1f, intensity)
-                (g as Graphics2D).stroke = BasicStroke(5 * intensity)
 
+                (g as Graphics2D).stroke = BasicStroke(5 * intensity)
                 val c = Color((color.red * intensity).toInt(), (color.green * intensity).toInt(),
                     (color.blue * intensity).toInt())
 

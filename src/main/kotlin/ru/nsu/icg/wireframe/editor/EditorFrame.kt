@@ -2,7 +2,7 @@ package ru.nsu.icg.wireframe.editor
 
 import ru.nsu.icg.wireframe.scene.ScenePanel
 import ru.nsu.icg.wireframe.utils.BSplineRotator
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.utils.loadImageFromResources
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -20,6 +20,8 @@ object EditorFrame : JFrame("Wireframe spline editor") {
         preferredSize = DEFAULT_SIZE
         minimumSize = MINIMUM_SIZE
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+
+        iconImage = loadImageFromResources("/icons/logo.png").image
 
         val selectedDotPanel = SelectedDotPanel()
 
@@ -52,7 +54,7 @@ object EditorFrame : JFrame("Wireframe spline editor") {
         }
         val onApply = {
             isVisible = false
-            ScenePanel.lines = BSplineRotator(
+            ScenePanel.figure = BSplineRotator(
                 dots = EditorPanel.splineDots,
                 segmentsEnds = EditorPanel.segmentsEnds,
                 m = ToolPanel.mSupplier(),
@@ -67,7 +69,9 @@ object EditorFrame : JFrame("Wireframe spline editor") {
             onApply = onApply,
             onDotsShown = EditorPanel::onDotsShown,
             onClear = EditorPanel::onClear,
+            onAutoscale = EditorPanel::autoScale.setter,
             onZoom = EditorPanel::onZoom,
+            onNormalize = EditorPanel::normalize
         )
         buttonPanel.preferredSize = ToolPanel.preferredSize
 
