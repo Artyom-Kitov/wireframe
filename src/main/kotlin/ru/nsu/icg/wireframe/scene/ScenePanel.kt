@@ -1,6 +1,6 @@
 package ru.nsu.icg.wireframe.scene
 
-import ru.nsu.icg.wireframe.model.Figure
+import ru.nsu.icg.wireframe.model.Scene
 import ru.nsu.icg.wireframe.model.linear.Matrix
 import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
@@ -12,29 +12,46 @@ object ScenePanel : JPanel() {
     private fun readResolve(): Any = ScenePanel
 
     private var scaleFactor = 500
-    var figure = Figure.LOGO
+    var figure = Scene.LOGO.figure
         set(value) {
             field = value
             val minSize = min(width / 2, height / 2)
             scaleFactor = (minSize / BOX_RADIUS).toInt()
             repaint()
         }
-    var color: Color = Color.MAGENTA
+    var scene
+        get() = Scene(
+            figure = figure,
+            rotation = rotationMatrix,
+            screenDistance = screenDistance,
+            rgb = color.rgb,
+            horizontalRotation = horizontalRotationAxis,
+            verticalRotation = verticalRotationAxis,
+        )
+        set(value) {
+            figure = value.figure
+            rotationMatrix = value.rotation
+            screenDistance = value.screenDistance
+            color = Color(value.rgb)
+            horizontalRotationAxis = value.horizontalRotation
+            verticalRotationAxis = value.verticalRotation
+        }
+    var color: Color = Color(Scene.LOGO.rgb)
 
     private const val FOCUS_POSITION = -10f
     private const val ROTATION_SCALE_FACTOR = 0.01f
     private const val BOX_RADIUS = 1.8f
     private const val COLOR_STEP = 20f
 
-    internal var screenDistance = 10f
+    internal var screenDistance = Scene.LOGO.screenDistance
 
     internal var rotationMatrix = Matrix.eye(4)
         set(value) {
             field = value
             repaint()
         }
-    private var horizontalRotationAxis = Vector.of(0f, 0f, 1f, 1f)
-    private var verticalRotationAxis = Vector.of(0f, 1f, 0f, 1f)
+    private var horizontalRotationAxis = Scene.LOGO.horizontalRotation
+    private var verticalRotationAxis = Scene.LOGO.verticalRotation
 
     private var mousePoint = Point(0, 0)
     private var isMousePressed = false
@@ -129,6 +146,8 @@ object ScenePanel : JPanel() {
 
         val transformMatrix = projectionMatrix * rotationMatrix
         for (line in figure) {
+            if (line.isEmpty()) continue
+
             var prev = transformMatrix * line[0]
             var x = prev[0]
             prev = prev / prev[3]
@@ -144,8 +163,8 @@ object ScenePanel : JPanel() {
                 val p2y = (height / 2 - next[1] * scaleFactor.toFloat()).toInt()
                 val p2z = (width / 2 + next[2] * scaleFactor.toFloat()).toInt()
 
-                val p1Intensity = 0.5f + 1f / (2f * COLOR_STEP) * prev[0]
-                val p2Intensity = 0.5f + 1f / (2f * COLOR_STEP) * next[0]
+                val p1Intensity: Float = 0.5f + 1f / (2f * COLOR_STEP) * prev[0]
+                val p2Intensity: Float = 0.5f + 1f / (2f * COLOR_STEP) * next[0]
 
                 var intensity = max(p1Intensity, p2Intensity)
                 intensity = between(0f, 1f, intensity)

@@ -54,8 +54,8 @@ object EditorFrame : JFrame("Wireframe spline editor") {
             EditorPanel.onDotDelete()
             selectedDotPanel.unselect()
         }
-        val onApply = onApply@{
-            if (EditorPanel.splineDots.size < 4) return@onApply
+        val onApply = fun() {
+            if (EditorPanel.splineDots.size < 4) return
             ScenePanel.figure = BSplineRotator(
                 dots = EditorPanel.splineDots,
                 segmentsEnds = EditorPanel.segmentsEnds,
@@ -95,7 +95,6 @@ object EditorFrame : JFrame("Wireframe spline editor") {
 
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent?) {
-                super.windowClosing(e)
                 onApply()
             }
         })

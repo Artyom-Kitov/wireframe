@@ -2,8 +2,8 @@ package ru.nsu.icg.wireframe.model.linear
 
 class Matrix(
     private val matrix: FloatArray,
-    private val n: Int,
-    private val m: Int,
+    val n: Int,
+    val m: Int,
 ) {
     companion object {
         fun of(vararg lines: FloatArray) : Matrix {

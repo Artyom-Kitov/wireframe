@@ -1,7 +1,6 @@
 package ru.nsu.icg.wireframe.model
 
 import com.google.gson.JsonParseException
-import ru.nsu.icg.wireframe.scene.ScenePanel
 import java.io.File
 import java.io.IOException
 import javax.swing.JFileChooser
@@ -22,14 +21,14 @@ object FileManager : JFileChooser() {
         dragEnabled = true
     }
 
-    fun open(): Figure.SerializedFigure? {
+    fun open(): Scene? {
         dialogTitle = OPEN_TITLE
         dialogType = OPEN_DIALOG
 
         val result = showOpenDialog(null)
         when (result) {
             APPROVE_OPTION -> return try {
-                Figure.readFrom(selectedFile)
+                Scene.readFrom(selectedFile)
             } catch (e: IOException) {
                 null
             } catch (e: JsonParseException) {
@@ -48,7 +47,7 @@ object FileManager : JFileChooser() {
         return null
     }
 
-    fun save(figure: Figure) {
+    fun save(scene: Scene) {
         dialogTitle = SAVE_TITLE
         dialogType = SAVE_DIALOG
         val result = showSaveDialog(null)
@@ -57,8 +56,7 @@ object FileManager : JFileChooser() {
                 selectedFile = File("${selectedFile.absolutePath}.$SUPPORTED_FORMAT")
             }
             try {
-                figure.writeTo(selectedFile, ScenePanel.rotationMatrix, ScenePanel.screenDistance,
-                    ScenePanel.color)
+                scene.writeTo(selectedFile)
             } catch (e: IOException) {
                 JOptionPane.showMessageDialog(this,
                     "Couldn't save to " + selectedFile.name,

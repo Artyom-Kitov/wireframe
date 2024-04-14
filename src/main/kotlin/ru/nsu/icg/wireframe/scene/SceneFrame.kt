@@ -8,8 +8,6 @@ import ru.nsu.icg.wireframe.model.loadScaledIconFromResources
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
 import javax.swing.*
 import kotlin.system.exitProcess
 
@@ -37,13 +35,8 @@ object SceneFrame : JFrame("Wireframe") {
     }
 
     private fun openScene() {
-        val figure = FileManager.open()
-        if (figure != null) {
-            ScenePanel.figure = figure.figure
-            ScenePanel.rotationMatrix = figure.rotation
-            ScenePanel.screenDistance = figure.screenDistance
-            ScenePanel.color = Color(figure.rgb)
-        }
+        val scene = FileManager.open()
+        if (scene != null) ScenePanel.scene = scene
     }
 
     private fun setupMenu() {
@@ -57,7 +50,7 @@ object SceneFrame : JFrame("Wireframe") {
         val fileOpen = JMenuItem("Open")
         val fileSave = JMenuItem("Save")
         fileOpen.addActionListener { openScene() }
-        fileSave.addActionListener { FileManager.save(ScenePanel.figure) }
+        fileSave.addActionListener { FileManager.save(ScenePanel.scene) }
         file.add(fileOpen)
         file.add(fileSave)
 
@@ -89,7 +82,7 @@ object SceneFrame : JFrame("Wireframe") {
         val save = JButton()
         save.icon = loadScaledIconFromResources("/icons/save.png", buttonWidth, buttonHeight)
         save.toolTipText = "Save scene"
-        save.addActionListener { FileManager.save(ScenePanel.figure) }
+        save.addActionListener { FileManager.save(ScenePanel.scene) }
         toolBar.add(save)
 
         toolBar.addSeparator()

@@ -27,15 +27,11 @@ class ControlDot (
         size = Dimension(2 * DOT_RADIUS + 1, 2 * DOT_RADIUS + 1)
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
-                super.mouseClicked(e)
                 onSelect(controlDot)
             }
 
             override fun mousePressed(e: MouseEvent?) {
-                super.mousePressed(e)
-                if (e == null) {
-                    return
-                }
+                if (e == null) return
                 onSelect(controlDot)
                 isPressed = true
                 prevX = e.x
@@ -43,14 +39,12 @@ class ControlDot (
             }
 
             override fun mouseReleased(e: MouseEvent?) {
-                super.mouseReleased(e)
                 isPressed = false
             }
         })
         val dot = this
         addMouseMotionListener(object : MouseAdapter() {
             override fun mouseDragged(e: MouseEvent?) {
-                super.mouseDragged(e)
                 if (e == null) {
                     return
                 }

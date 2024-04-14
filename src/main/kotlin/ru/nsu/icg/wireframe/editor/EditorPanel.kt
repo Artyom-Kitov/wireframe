@@ -10,7 +10,6 @@ import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.math.abs
 import kotlin.math.min
-import kotlin.math.sign
 
 object EditorPanel : JPanel() {
     private fun readResolve(): Any = EditorPanel
