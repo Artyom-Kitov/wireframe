@@ -3,10 +3,7 @@ package ru.nsu.icg.wireframe.scene
 import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
 import javax.swing.JPanel
-import kotlin.math.acos
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.sign
+import kotlin.math.*
 
 object AxisLocatorPanel : JPanel() {
     private fun readResolve(): Any = AxisLocatorPanel
@@ -38,6 +35,13 @@ object AxisLocatorPanel : JPanel() {
         if (g == null) return
 
         (g as Graphics2D).stroke = BasicStroke(1f)
+        val r = rotationMatrix
+        val alpha = atan2(r[2, 1], r[2, 2])
+        val beta = atan2(-r[2, 0], sqrt(r[2, 1] * r[2, 1] + r[2, 2] * r[2, 2]))
+        val gamma = atan2(r[1, 0], r[0, 0])
+
+        val angles = floatArrayOf(alpha, beta, gamma)
+
         for (i in axis.indices) {
             g.color = colors[i]
             val transformed = rotationMatrix * axis[i]
@@ -49,15 +53,9 @@ object AxisLocatorPanel : JPanel() {
             g.drawString(names[i], x2 + 3, y2 - 3)
             g.drawLine(x1, y1, x2, y2)
 
-        }
-        val beta = asin(rotationMatrix[0, 2]).toDouble()
-        val gamma = asin(-rotationMatrix[0, 1] / cos(beta))
-        val alpha = asin(-rotationMatrix[1, 2] / cos(beta))
-        val angles = doubleArrayOf(alpha, beta, gamma)
-        for (i in axis.indices) {
-            g.color = colors[i]
-            g.drawString("${names[i]}: ${"%.2f".format(Math.toDegrees(angles[i]))}°",
+            g.drawString("${names[i]}: ${"%.2f".format(Math.toDegrees(angles[i].toDouble()))}°",
                 AXIS_WIDTH, 10 + i * 20)
         }
+
     }
 }
