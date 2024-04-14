@@ -33,6 +33,8 @@ object ScenePanel : JPanel() {
             field = value
             repaint()
         }
+    private var horizontalRotationAxis = Vector.of(0f, 0f, 1f, 1f)
+    private var verticalRotationAxis = Vector.of(0f, 1f, 0f, 1f)
 
     private var mousePoint = Point(0, 0)
     private var isMousePressed = false
@@ -57,11 +59,7 @@ object ScenePanel : JPanel() {
                 if (e == null || !isMousePressed) return
                 val dx = (e.x - mousePoint.x).toFloat()
                 val dy = (e.y - mousePoint.y).toFloat()
-                if (dx == 0f && dy == 0f) return
-
-                val norm = sqrt(dx * dx + dy * dy)
-                val angle = norm * ROTATION_SCALE_FACTOR
-                rotateAroundVector(Vector.of(0f, dx, dy, norm) / norm, angle)
+                rotate(dx, dy)
                 mousePoint = e.point
             }
         })
@@ -81,8 +79,26 @@ object ScenePanel : JPanel() {
         })
     }
 
+    fun rotate(dx: Float, dy: Float) {
+        val norm = sqrt(dx * dx + dy * dy)
+        if (dx != 0f) {
+            val angle = norm * ROTATION_SCALE_FACTOR * sign(dx)
+            rotationMatrix *= rotationAroundVector(verticalRotationAxis, angle)
+            horizontalRotationAxis *= rotationAroundVector(verticalRotationAxis, -angle)
+        }
+        if (dy != 0f) {
+            val angle = norm * ROTATION_SCALE_FACTOR * sign(dy)
+            rotationMatrix *= rotationAroundVector(horizontalRotationAxis, angle)
+            verticalRotationAxis *= rotationAroundVector(horizontalRotationAxis, -angle)
+        }
+        horizontalRotationAxis.normalize(3)
+        verticalRotationAxis.normalize(3)
+    }
+
     fun reset() {
         rotationMatrix = Matrix.eye(4)
+        horizontalRotationAxis = Vector.of(0f, 0f, 1f, 1f)
+        verticalRotationAxis = Vector.of(0f, 1f, 0f, 1f)
     }
 
     private val projectionMatrix
@@ -93,11 +109,11 @@ object ScenePanel : JPanel() {
             floatArrayOf(1f, 0f, 0f, -FOCUS_POSITION)
         )
 
-    internal fun rotateAroundVector(vector: Vector, angle: Float) {
+    private fun rotationAroundVector(vector: Vector, angle: Float): Matrix {
         val c = cos(angle)
         val s = sin(angle)
         val (x, y, z) = vector
-        rotationMatrix *= Matrix.of(
+        return Matrix.of(
             floatArrayOf(c+(1-c)*x*x, (1-c)*x*y-s*z, (1-c)*x*z+s*y, 0f),
             floatArrayOf((1-c)*x*y+s*z, c+(1-c)*y*y, (1-c)*y*z-s*x, 0f),
             floatArrayOf((1-c)*x*z-s*y, (1-c)*y*z+s*x, c+(1-c)*z*z, 0f),

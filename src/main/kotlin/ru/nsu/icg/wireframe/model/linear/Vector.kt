@@ -1,5 +1,7 @@
 package ru.nsu.icg.wireframe.model.linear
 
+import kotlin.math.sqrt
+
 class Vector(
     private var vector: FloatArray
 ) {
@@ -7,6 +9,17 @@ class Vector(
 
     companion object {
         fun of(vararg elements: Float) = Vector(elements)
+    }
+
+    fun normalize(length: Int = n) {
+        var s = 0f
+        for (i in 0..<length) {
+            s += vector[i] * vector[i]
+        }
+        val norm = sqrt(s)
+        for (i in 0..<length) {
+            vector[i] /= norm
+        }
     }
 
     fun copy() = of(*vector)

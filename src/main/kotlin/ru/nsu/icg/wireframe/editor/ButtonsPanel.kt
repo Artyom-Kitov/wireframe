@@ -8,7 +8,7 @@ class ButtonsPanel(
     onDotAdd: (Float, Float) -> Unit,
     onDotDelete: () -> Unit,
     onClear: () -> Unit,
-    onZoom: () -> Unit,
+    onZoom: (Boolean) -> Unit,
     onNormalize: () -> Unit,
     onDotsShown: (Boolean) -> Unit,
     onAutoscale: (Boolean) -> Unit,
@@ -29,8 +29,8 @@ class ButtonsPanel(
 
         val zoomInButton = JButton("Zoom in")
         val zoomOutButton = JButton("Zoom out")
-        zoomInButton.addActionListener { onZoom() }
-        zoomOutButton.addActionListener { onZoom() }
+        zoomInButton.addActionListener { onZoom(true) }
+        zoomOutButton.addActionListener { onZoom(false) }
 
         val normalizeButton = JButton("Normalize")
         normalizeButton.addActionListener { onNormalize() }

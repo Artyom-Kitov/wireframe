@@ -102,7 +102,7 @@ object EditorPanel : JPanel() {
         this.addMouseWheelListener(object : MouseAdapter() {
             override fun mouseWheelMoved(e: MouseWheelEvent?) {
                 if (e == null) return
-                onZoom(-ZOOM_DELTA * sign(e.wheelRotation.toFloat()))
+                onZoom(e.wheelRotation < 0)
             }
         })
     }
@@ -179,11 +179,12 @@ object EditorPanel : JPanel() {
         repaint()
     }
 
-    fun onZoom(delta: Float = ZOOM_DELTA) {
-        if (scaleFactor + delta <= MIN_SCALE_FACTOR) {
+    fun onZoom(zoomIn: Boolean) {
+        val sign = if (zoomIn) 1 else -1
+        if (scaleFactor + sign * ZOOM_DELTA <= MIN_SCALE_FACTOR) {
             return
         }
-        scaleFactor = (scaleFactor + delta).toInt()
+        scaleFactor = (scaleFactor + sign * ZOOM_DELTA).toInt()
         if (autoScale) rescale()
         repaint()
     }

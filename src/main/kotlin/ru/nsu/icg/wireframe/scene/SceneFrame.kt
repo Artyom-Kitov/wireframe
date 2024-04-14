@@ -8,6 +8,8 @@ import ru.nsu.icg.wireframe.model.loadScaledIconFromResources
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.*
 import kotlin.system.exitProcess
 
