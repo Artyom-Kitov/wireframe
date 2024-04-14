@@ -3,7 +3,9 @@ package ru.nsu.icg.wireframe.utils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
+import ru.nsu.icg.wireframe.utils.linear.Matrix
 import ru.nsu.icg.wireframe.utils.linear.Vector
+import java.awt.Color
 import java.io.File
 import java.io.IOException
 import kotlin.math.abs
@@ -30,16 +32,24 @@ data class Figure(
         }
     }
 
+    data class SerializedFigure(
+        val figure: Figure,
+        val rotation: Matrix,
+        val screenDistance: Float,
+        val rgb: Int
+    )
+
     @Throws(IOException::class)
-    fun writeTo(file: File) {
+    fun writeTo(file: File, rotation: Matrix, screenDistance: Float, color: Color) {
         if (file.exists() && file.delete()) file.createNewFile()
         val gson = GsonBuilder().setPrettyPrinting().create()
-        file.writeText(gson.toJson(this))
+        file.writeText(gson.toJson(SerializedFigure(this, rotation, screenDistance, color.rgb)))
     }
 
     companion object {
-        fun readFrom(file: File): Figure {
-            return Gson().fromJson(file.reader(), Figure::class.java)
+        @Throws(JsonParseException::class)
+        fun readFrom(file: File): SerializedFigure {
+            return Gson().fromJson(file.reader(), SerializedFigure::class.java)
         }
 
         val LOGO: Figure

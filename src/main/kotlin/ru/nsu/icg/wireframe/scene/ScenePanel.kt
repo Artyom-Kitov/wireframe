@@ -23,12 +23,16 @@ object ScenePanel : JPanel() {
 
     private const val FOCUS_POSITION = -10f
     private const val ROTATION_SCALE_FACTOR = 0.01f
-    private const val BOX_RADIUS = 2f
+    private const val BOX_RADIUS = 1.8f
     private const val COLOR_STEP = 20f
 
-    private var screenDistance = 10f
+    internal var screenDistance = 10f
 
     internal var rotationMatrix = Matrix.eye(4)
+        set(value) {
+            field = value
+            repaint()
+        }
 
     private var mousePoint = Point(0, 0)
     private var isMousePressed = false
@@ -58,9 +62,7 @@ object ScenePanel : JPanel() {
                 val norm = sqrt(dx * dx + dy * dy)
                 val angle = norm * ROTATION_SCALE_FACTOR
                 rotateAroundVector(Vector.of(0f, dx, dy, norm) / norm, angle)
-
                 mousePoint = e.point
-                repaint()
             }
         })
         this.addMouseWheelListener(object : MouseAdapter() {
@@ -81,7 +83,6 @@ object ScenePanel : JPanel() {
 
     fun reset() {
         rotationMatrix = Matrix.eye(4)
-        repaint()
     }
 
     private val projectionMatrix
@@ -97,9 +98,9 @@ object ScenePanel : JPanel() {
         val s = sin(angle)
         val (x, y, z) = vector
         rotationMatrix *= Matrix.of(
-            floatArrayOf(c + (1 - c) * x * x, (1 - c) * x * y - s * z, (1 - c) * x * z + s * y, 0f),
-            floatArrayOf((1 - c) * x * y + s * z, c + (1 - c) * y * y, (1 - c) * y * z - s * x, 0f),
-            floatArrayOf((1 - c) * x * z - s * y, (1 - c) * y * z + s * x, c + (1 - c) * z * z, 0f),
+            floatArrayOf(c+(1-c)*x*x, (1-c)*x*y-s*z, (1-c)*x*z+s*y, 0f),
+            floatArrayOf((1-c)*x*y+s*z, c+(1-c)*y*y, (1-c)*y*z-s*x, 0f),
+            floatArrayOf((1-c)*x*z-s*y, (1-c)*y*z+s*x, c+(1-c)*z*z, 0f),
             floatArrayOf(0f, 0f, 0f, 1f),
         )
     }

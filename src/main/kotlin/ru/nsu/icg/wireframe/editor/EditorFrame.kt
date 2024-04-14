@@ -6,6 +6,8 @@ import ru.nsu.icg.wireframe.utils.loadImageFromResources
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import javax.swing.JFrame
 import javax.swing.SpringLayout
 import javax.swing.WindowConstants
@@ -52,8 +54,8 @@ object EditorFrame : JFrame("Wireframe spline editor") {
             EditorPanel.onDotDelete()
             selectedDotPanel.unselect()
         }
-        val onApply = {
-            isVisible = false
+        val onApply = onApply@{
+            if (EditorPanel.splineDots.size < 4) return@onApply
             ScenePanel.figure = BSplineRotator(
                 dots = EditorPanel.splineDots,
                 segmentsEnds = EditorPanel.segmentsEnds,
@@ -90,5 +92,12 @@ object EditorFrame : JFrame("Wireframe spline editor") {
 
         this.pack()
         isVisible = false
+
+        addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(e: WindowEvent?) {
+                super.windowClosing(e)
+                onApply()
+            }
+        })
     }
 }
