@@ -1,6 +1,6 @@
-package ru.nsu.icg.wireframe.utils
+package ru.nsu.icg.wireframe.model
 
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.model.linear.Vector
 
 data class Line(
     private val dots: MutableList<Vector> = mutableListOf()

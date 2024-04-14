@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.utils
+package ru.nsu.icg.wireframe.model
 
 import java.awt.Dimension
 import java.awt.FlowLayout

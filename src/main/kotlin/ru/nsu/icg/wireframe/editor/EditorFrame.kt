@@ -1,8 +1,8 @@
 package ru.nsu.icg.wireframe.editor
 
 import ru.nsu.icg.wireframe.scene.ScenePanel
-import ru.nsu.icg.wireframe.utils.BSplineRotator
-import ru.nsu.icg.wireframe.utils.loadImageFromResources
+import ru.nsu.icg.wireframe.model.BSplineRotator
+import ru.nsu.icg.wireframe.model.loadImageFromResources
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent

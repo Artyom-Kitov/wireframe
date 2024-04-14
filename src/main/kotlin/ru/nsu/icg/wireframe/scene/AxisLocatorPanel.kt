@@ -1,6 +1,6 @@
 package ru.nsu.icg.wireframe.scene
 
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
 import javax.swing.JPanel
 

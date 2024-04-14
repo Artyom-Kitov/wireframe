@@ -1,7 +1,6 @@
-package ru.nsu.icg.wireframe.utils
+package ru.nsu.icg.wireframe.model
 
 import com.google.gson.JsonParseException
-import ru.nsu.icg.wireframe.editor.ToolPanel
 import ru.nsu.icg.wireframe.scene.ScenePanel
 import java.io.File
 import java.io.IOException

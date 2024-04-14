@@ -1,8 +1,6 @@
-package ru.nsu.icg.wireframe.utils
+package ru.nsu.icg.wireframe.model
 
-import ru.nsu.icg.wireframe.utils.linear.Vector
-import java.io.File
-import java.nio.file.Path
+import ru.nsu.icg.wireframe.model.linear.Vector
 import kotlin.math.*
 
 class BSplineRotator(

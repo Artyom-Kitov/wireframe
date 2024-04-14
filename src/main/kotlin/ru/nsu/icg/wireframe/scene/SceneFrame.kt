@@ -1,10 +1,10 @@
 package ru.nsu.icg.wireframe.scene
 
 import ru.nsu.icg.wireframe.editor.EditorFrame
-import ru.nsu.icg.wireframe.utils.AboutFrame
-import ru.nsu.icg.wireframe.utils.FileManager
-import ru.nsu.icg.wireframe.utils.loadImageFromResources
-import ru.nsu.icg.wireframe.utils.loadScaledIconFromResources
+import ru.nsu.icg.wireframe.model.AboutFrame
+import ru.nsu.icg.wireframe.model.FileManager
+import ru.nsu.icg.wireframe.model.loadImageFromResources
+import ru.nsu.icg.wireframe.model.loadScaledIconFromResources
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension

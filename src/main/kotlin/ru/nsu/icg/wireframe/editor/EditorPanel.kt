@@ -1,7 +1,7 @@
 package ru.nsu.icg.wireframe.editor
 
-import ru.nsu.icg.wireframe.utils.linear.Matrix
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.model.linear.Matrix
+import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent

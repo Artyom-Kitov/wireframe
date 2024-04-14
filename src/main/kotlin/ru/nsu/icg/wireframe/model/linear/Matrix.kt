@@ -1,4 +1,4 @@
-package ru.nsu.icg.wireframe.utils.linear
+package ru.nsu.icg.wireframe.model.linear
 
 class Matrix(
     private val matrix: FloatArray,

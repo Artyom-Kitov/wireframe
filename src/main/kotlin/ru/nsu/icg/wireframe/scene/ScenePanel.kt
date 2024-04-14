@@ -1,8 +1,8 @@
 package ru.nsu.icg.wireframe.scene
 
-import ru.nsu.icg.wireframe.utils.Figure
-import ru.nsu.icg.wireframe.utils.linear.Matrix
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.model.Figure
+import ru.nsu.icg.wireframe.model.linear.Matrix
+import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
 import java.awt.event.*
 import javax.swing.JPanel

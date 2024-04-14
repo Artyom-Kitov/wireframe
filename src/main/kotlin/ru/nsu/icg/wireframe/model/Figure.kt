@@ -1,10 +1,10 @@
-package ru.nsu.icg.wireframe.utils
+package ru.nsu.icg.wireframe.model
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
-import ru.nsu.icg.wireframe.utils.linear.Matrix
-import ru.nsu.icg.wireframe.utils.linear.Vector
+import ru.nsu.icg.wireframe.model.linear.Matrix
+import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.Color
 import java.io.File
 import java.io.IOException
