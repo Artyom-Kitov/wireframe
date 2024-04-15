@@ -4,10 +4,7 @@ import ru.nsu.icg.wireframe.scene.ScenePanel
 import ru.nsu.icg.wireframe.model.BSplineRotator
 import ru.nsu.icg.wireframe.model.loadImageFromResources
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import java.awt.event.*
 import javax.swing.JFrame
 import javax.swing.SpringLayout
 import javax.swing.WindowConstants
@@ -54,6 +51,7 @@ object EditorFrame : JFrame("Wireframe spline editor") {
             EditorPanel.onDotDelete()
             selectedDotPanel.unselect()
         }
+        EditorPanel.onDelete = onDelete
         val onApply = fun() {
             if (EditorPanel.splineDots.size < 4) return
             ScenePanel.figure = BSplineRotator(
@@ -98,5 +96,6 @@ object EditorFrame : JFrame("Wireframe spline editor") {
                 onApply()
             }
         })
+
     }
 }

@@ -3,9 +3,7 @@ package ru.nsu.icg.wireframe.editor
 import ru.nsu.icg.wireframe.model.linear.Matrix
 import ru.nsu.icg.wireframe.model.linear.Vector
 import java.awt.*
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.awt.event.MouseWheelEvent
+import java.awt.event.*
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.math.abs
@@ -19,6 +17,8 @@ object EditorPanel : JPanel() {
 
     var onSelect: (ControlDot) -> Unit = {  }
     var onUnselect: () -> Unit = {  }
+
+    var onDelete: () -> Unit = {  }
 
     var autoScale = false
         set(value) {
@@ -55,6 +55,16 @@ object EditorPanel : JPanel() {
         isDoubleBuffered = true
         background = Color.BLACK
         layout = null
+        requestFocusInWindow()
+        addKeyListener(object : KeyAdapter() {
+            override fun keyPressed(e: KeyEvent?) {
+                if (e == null) return
+                when (e.keyCode) {
+                    KeyEvent.VK_DELETE -> onDelete()
+                    KeyEvent.VK_BACK_SPACE -> onDelete()
+                }
+            }
+        })
         this.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (e == null) {
@@ -69,6 +79,7 @@ object EditorPanel : JPanel() {
                     addDot(xToU(e.x), yToV(e.y))
                 }
                 if (autoScale) rescale()
+                requestFocusInWindow()
             }
 
             override fun mousePressed(e: MouseEvent?) {
@@ -76,6 +87,7 @@ object EditorPanel : JPanel() {
                 isPressed = true
                 origin = Point(e.x, e.y)
                 cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
+                requestFocusInWindow()
             }
 
             override fun mouseReleased(e: MouseEvent?) {

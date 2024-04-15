@@ -4,11 +4,17 @@ import com.formdev.flatlaf.FlatDarkLaf
 import ru.nsu.icg.wireframe.scene.SceneFrame
 import javax.swing.UIManager
 
-fun main() {
-    try {
-        UIManager.setLookAndFeel(FlatDarkLaf())
-    } catch (e: ClassNotFoundException) {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+
+class Main {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            try {
+                UIManager.setLookAndFeel(FlatDarkLaf())
+            } catch (e: ClassNotFoundException) {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+            }
+            SceneFrame.isVisible = true
+        }
     }
-    SceneFrame.isVisible = true
 }

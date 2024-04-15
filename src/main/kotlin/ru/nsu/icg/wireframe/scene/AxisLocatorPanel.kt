@@ -27,7 +27,7 @@ object AxisLocatorPanel : JPanel() {
     init {
         size = Dimension(AXIS_WIDTH * 2, AXIS_HEIGHT)
         preferredSize = Dimension(AXIS_WIDTH * 2, AXIS_HEIGHT)
-        background = Color.BLACK
+        background = Color(0f, 0f, 0f, 0f)
     }
 
     override fun paintComponent(g: Graphics?) {

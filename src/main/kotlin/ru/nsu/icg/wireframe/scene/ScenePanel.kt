@@ -41,7 +41,7 @@ object ScenePanel : JPanel() {
     private const val FOCUS_POSITION = -10f
     private const val ROTATION_SCALE_FACTOR = 0.01f
     private const val BOX_RADIUS = 1.8f
-    private const val COLOR_STEP = 20f
+    private const val COLOR_STEP = 2f
 
     internal var screenDistance = Scene.LOGO.screenDistance
 
@@ -120,7 +120,7 @@ object ScenePanel : JPanel() {
 
     private val projectionMatrix
         get() = Matrix.of(
-            floatArrayOf(FOCUS_POSITION, 0f, 0f, 0f),
+            floatArrayOf(1f, 0f, 0f, 0f),
             floatArrayOf(0f, screenDistance, 0f, 0f),
             floatArrayOf(0f, 0f, screenDistance, 0f),
             floatArrayOf(1f, 0f, 0f, -FOCUS_POSITION)
@@ -163,8 +163,8 @@ object ScenePanel : JPanel() {
                 val p2y = (height / 2 - next[1] * scaleFactor.toFloat()).toInt()
                 val p2z = (width / 2 + next[2] * scaleFactor.toFloat()).toInt()
 
-                val p1Intensity: Float = 0.5f + 1f / (2f * COLOR_STEP) * prev[0]
-                val p2Intensity: Float = 0.5f + 1f / (2f * COLOR_STEP) * next[0]
+                val p1Intensity: Float = 0.5f - 1f / (2f * COLOR_STEP) * prev[0]
+                val p2Intensity: Float = 0.5f - 1f / (2f * COLOR_STEP) * next[0]
 
                 var intensity = max(p1Intensity, p2Intensity)
                 intensity = between(0f, 1f, intensity)
